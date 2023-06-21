@@ -839,7 +839,9 @@ Module["onRuntimeInitialized"] = function onRuntimeInitialized() {
         // Initialiser l'extension
         var errMessagePtr = _malloc(4);
         setValue(errMessagePtr, 0, "i8*");
-        var result = sqlite3_series_init(this.db, errMessagePtr, null);
+        console.log(typeof this.db, typeof errMessagePtr, typeof apiTemp);
+        var result = sqlite3_series_init(this.db, errMessagePtr, 0);
+
 
         // Vérifier le résultat
         if (result !== SQLITE_OK) {
