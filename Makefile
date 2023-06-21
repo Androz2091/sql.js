@@ -18,7 +18,7 @@ EXTENSION_FUNCTIONS_SHA1 = c68fa706d6d9ff98608044c00212473f9c14892f
 SERIES_C = series.c
 SERIES_C_URL = https://www.sqlite.org/src/raw/dde5ba69cb9053ff32b5afd64e8d202472325bc052301e31e4d9c0d87e4fff50?at=series.c
 
-EMCC=emcc
+EMCC=emcc -g
 
 SQLITE_COMPILATION_FLAGS = \
 	-Oz \
