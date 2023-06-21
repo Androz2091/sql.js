@@ -239,6 +239,12 @@ Module["onRuntimeInitialized"] = function onRuntimeInitialized() {
         ["number"]
     );
 
+    var sqlite3_series_init = cwrap(
+        "sqlite3_series_init",
+        "number",
+        ["number", "number", "number"]
+    );
+
     /**
     * @classdesc
     * Represents a prepared statement.
@@ -830,6 +836,19 @@ Module["onRuntimeInitialized"] = function onRuntimeInitialized() {
         this.handleError(sqlite3_open(this.filename, apiTemp));
         this.db = getValue(apiTemp, "i32");
         registerExtensionFunctions(this.db);
+        // Initialiser l'extension
+        var errMessagePtr = _malloc(4);
+        setValue(errMessagePtr, 0, "i8*");
+        var result = sqlite3_series_init(this.db, errMessagePtr, null);
+
+        // Vérifier le résultat
+        if (result !== SQLITE_OK) {
+            var errMessage = UTF8ToString(getValue(errMessagePtr, "i8*"));
+            _free(errMessagePtr);
+            // eslint-disable-next-line max-len
+            throw new Error("Failed to initialize series extension: " + errMessage);
+        }
+        _free(errMessagePtr);
         // A list of all prepared statements of the database
         this.statements = {};
         // A list of all user function of the database

@@ -15,6 +15,9 @@ EXTENSION_FUNCTIONS = extension-functions.c
 EXTENSION_FUNCTIONS_URL = https://www.sqlite.org/contrib/download/extension-functions.c?get=25
 EXTENSION_FUNCTIONS_SHA1 = c68fa706d6d9ff98608044c00212473f9c14892f
 
+SERIES_C = series.c
+SERIES_C_URL = https://www.sqlite.org/src/raw/dde5ba69cb9053ff32b5afd64e8d202472325bc052301e31e4d9c0d87e4fff50?at=series.c
+
 EMCC=emcc
 
 SQLITE_COMPILATION_FLAGS = \
@@ -59,7 +62,7 @@ EMFLAGS_DEBUG = \
 	-s ASSERTIONS=1 \
 	-O1
 
-BITCODE_FILES = out/sqlite3.bc out/extension-functions.bc
+BITCODE_FILES = out/sqlite3.bc out/series.bc out/extension-functions.bc
 
 OUTPUT_WRAPPER_FILES = src/shell-pre.js src/shell-post.js
 
@@ -147,6 +150,10 @@ out/sqlite3.bc: sqlite-src/$(SQLITE_AMALGAMATION)
 	# Generate llvm bitcode
 	$(EMCC) $(SQLITE_COMPILATION_FLAGS) -c sqlite-src/$(SQLITE_AMALGAMATION)/sqlite3.c -o $@
 
+out/series.bc: sqlite-src/$(SQLITE_AMALGAMATION)
+	mkdir -p out
+	$(EMCC) $(CFLAGS) -s LINKABLE=1 -c sqlite-src/$(SQLITE_AMALGAMATION)/series.c -o $@
+
 # Since the extension-functions.c includes other headers in the sqlite_amalgamation, we declare that this depends on more than just extension-functions.c
 out/extension-functions.bc: sqlite-src/$(SQLITE_AMALGAMATION)
 	mkdir -p out
@@ -162,15 +169,19 @@ cache/$(SQLITE_AMALGAMATION).zip:
 	mkdir -p cache
 	curl -LsSf '$(SQLITE_AMALGAMATION_ZIP_URL)' -o $@
 
+cache/$(SERIES_C):
+	mkdir -p cache
+	curl -LsSf '$(SERIES_C_URL)' -o $@
+
 cache/$(EXTENSION_FUNCTIONS):
 	mkdir -p cache
 	curl -LsSf '$(EXTENSION_FUNCTIONS_URL)' -o $@
 
 ## sqlite-src
 .PHONY: sqlite-src
-sqlite-src: sqlite-src/$(SQLITE_AMALGAMATION) sqlite-src/$(SQLITE_AMALGAMATION)/$(EXTENSION_FUNCTIONS)
+sqlite-src: sqlite-src/$(SQLITE_AMALGAMATION) sqlite-src/$(SQLITE_AMALGAMATION)/$(EXTENSION_FUNCTIONS) sqlite-src/$(SQLITE_AMALGAMATION)/$(SERIES_C)
 
-sqlite-src/$(SQLITE_AMALGAMATION): cache/$(SQLITE_AMALGAMATION).zip sqlite-src/$(SQLITE_AMALGAMATION)/$(EXTENSION_FUNCTIONS)
+sqlite-src/$(SQLITE_AMALGAMATION): cache/$(SQLITE_AMALGAMATION).zip sqlite-src/$(SQLITE_AMALGAMATION)/$(EXTENSION_FUNCTIONS) sqlite-src/$(SQLITE_AMALGAMATION)/$(SERIES_C)
 	mkdir -p sqlite-src/$(SQLITE_AMALGAMATION)
 	echo '$(SQLITE_AMALGAMATION_ZIP_SHA3)  ./cache/$(SQLITE_AMALGAMATION).zip' > cache/check.txt
 	sha3sum -a 256 -c cache/check.txt
@@ -186,6 +197,9 @@ sqlite-src/$(SQLITE_AMALGAMATION)/$(EXTENSION_FUNCTIONS): cache/$(EXTENSION_FUNC
 	sha1sum -c cache/check.txt
 	cp 'cache/$(EXTENSION_FUNCTIONS)' $@
 
+sqlite-src/$(SQLITE_AMALGAMATION)/$(SERIES_C): cache/$(SERIES_C)
+	mkdir -p sqlite-src/$(SQLITE_AMALGAMATION)
+	cp 'cache/$(SERIES_C)' $@
 
 .PHONY: clean
 clean:
