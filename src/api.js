@@ -842,7 +842,6 @@ Module["onRuntimeInitialized"] = function onRuntimeInitialized() {
         console.log(typeof this.db, typeof errMessagePtr, typeof apiTemp);
         var result = sqlite3_series_init(this.db, errMessagePtr, 0);
 
-
         // Vérifier le résultat
         if (result !== SQLITE_OK) {
             var errMessage = UTF8ToString(getValue(errMessagePtr, "i8*"));
