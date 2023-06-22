@@ -18,7 +18,7 @@ EXTENSION_FUNCTIONS_SHA1 = c68fa706d6d9ff98608044c00212473f9c14892f
 SERIES_C = series.c
 SERIES_C_URL = https://raw.githubusercontent.com/dumpus-app/sql.js/master/series.c
 
-EMCC=emcc
+EMCC=emcc -g
 
 SQLITE_COMPILATION_FLAGS = \
 	-Oz \

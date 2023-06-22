@@ -837,18 +837,17 @@ Module["onRuntimeInitialized"] = function onRuntimeInitialized() {
         this.db = getValue(apiTemp, "i32");
         registerExtensionFunctions(this.db);
         // Initialiser l'extension
-        var errMessagePtr = _malloc(4);
-        setValue(errMessagePtr, 0, "i8*");
-        var result = sqlite3_series_init(this.db, errMessagePtr, 0);
+        // var errMessagePtr = _malloc(4);
+        // setValue(errMessagePtr, 0, "i8*");
+        sqlite3_series_init(this.db, 0, 0);
 
-        // Vérifier le résultat
+        /* Vérifier le résultat
         if (result !== SQLITE_OK) {
             var errMessage = UTF8ToString(getValue(errMessagePtr, "i8*"));
             _free(errMessagePtr);
             // eslint-disable-next-line max-len
-            throw new Error("Failed to initialize series extension: " + errMessage);
         }
-        _free(errMessagePtr);
+        _free(errMessagePtr); */
         // A list of all prepared statements of the database
         this.statements = {};
         // A list of all user function of the database
